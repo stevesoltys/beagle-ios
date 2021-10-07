@@ -36,6 +36,10 @@ extension Text {
         
         renderer.observe(text, andUpdate: \.text, in: textView)
 
+        renderer.observe(textSize, andUpdate: \.font, in: textView) {
+            .systemFont(ofSize: CGFloat(Float($0 ?? 16)))
+        }
+
         renderer.observe(alignment, andUpdate: \.textAlignment, in: textView) { alignment in
             alignment?.toUIKit() ?? .natural
         }

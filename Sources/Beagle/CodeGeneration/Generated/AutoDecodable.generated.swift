@@ -439,6 +439,7 @@ extension Text {
         case styleId
         case alignment
         case textColor
+        case textSize
     }
 
     public init(from decoder: Decoder) throws {
@@ -448,6 +449,7 @@ extension Text {
         styleId = try container.decodeIfPresent(String.self, forKey: .styleId)
         alignment = try container.decodeIfPresent(Expression<Alignment>.self, forKey: .alignment)
         textColor = try container.decodeIfPresent(Expression<String>.self, forKey: .textColor)
+        textSize = try container.decodeIfPresent(Expression<Int>.self, forKey: .textSize)
         widgetProperties = try WidgetProperties(from: decoder)
     }
 }

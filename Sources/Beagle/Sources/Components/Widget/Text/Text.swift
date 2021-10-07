@@ -28,6 +28,9 @@ public struct Text: Widget, AutoDecodable {
     
     /// Defines the text color natively.
     public let textColor: Expression<String>?
+
+    /// Defines the text size natively.
+    public let textSize: Expression<Int>?
     
     /// Properties that all widgets have in common.
     public var widgetProperties: WidgetProperties
@@ -37,12 +40,14 @@ public struct Text: Widget, AutoDecodable {
         styleId: String? = nil,
         alignment: Expression<Alignment>? = nil,
         textColor: Expression<String>? = nil,
+        textSize: Expression<Int>? = nil,
         widgetProperties: WidgetProperties = WidgetProperties()
     ) {
         self.text = text
         self.styleId = styleId
         self.alignment = alignment
         self.textColor = textColor
+        self.textSize = textSize
         self.widgetProperties = widgetProperties
     }
 }
