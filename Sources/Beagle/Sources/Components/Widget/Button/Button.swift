@@ -19,6 +19,12 @@ public struct Button: Widget, ClickedOnComponent, AutoDecodable {
     
     /// Defines the button text content.
     public let text: Expression<String>
+
+    /// Defines the button text color.
+    public let textColor: Expression<String>?
+
+    /// Defines the button text size.
+    public let textSize: Expression<Int>?
     
     /// References a native style configured to be applied on this button.
     public let styleId: String?
@@ -39,6 +45,8 @@ public struct Button: Widget, ClickedOnComponent, AutoDecodable {
     @available(*, deprecated, message: "Since version 1.6, a new infrastructure for analytics (Analytics 2.0) was provided, for more info check https://docs.usebeagle.io/v1.9/resources/analytics/")
     public init(
         text: Expression<String>,
+        textColor: Expression<String>? = nil,
+        textSize: Expression<Int>? = nil,
         styleId: String? = nil,
         onPress: [Action]? = nil,
         enabled: Expression<Bool>? = nil,
@@ -46,6 +54,8 @@ public struct Button: Widget, ClickedOnComponent, AutoDecodable {
         widgetProperties: WidgetProperties = WidgetProperties()
     ) {
         self.text = text
+        self.textColor = textColor
+        self.textSize = textSize
         self.styleId = styleId
         self.onPress = onPress
         self.enabled = enabled
@@ -56,12 +66,16 @@ public struct Button: Widget, ClickedOnComponent, AutoDecodable {
     
     public init(
         text: Expression<String>,
+        textColor: Expression<String>? = nil,
+        textSize: Expression<Int>? = nil,
         styleId: String? = nil,
         onPress: [Action]? = nil,
         enabled: Expression<Bool>? = nil,
         widgetProperties: WidgetProperties = WidgetProperties()
     ) {
         self.text = text
+        self.textColor = textColor
+        self.textSize = textSize
         self.styleId = styleId
         self.onPress = onPress
         self.enabled = enabled

@@ -35,6 +35,14 @@ extension Button {
                 button.setTitleColor(enabled ? .systemBlue : .systemGray, for: .normal)
             }
         }
+
+        renderer.observe(textColor, andUpdateManyIn: button) {
+            button.setTitleColor($0.flatMap { UIColor(hex: $0) }, for: .normal)
+        }
+
+        renderer.observe(textSize, andUpdateManyIn: button) {
+            button.titleLabel?.font = .systemFont(ofSize: CGFloat(Float($0 ?? 16)))
+        }
         
         let preFetchHelper = renderer.dependencies.preFetchHelper
         onPress?
