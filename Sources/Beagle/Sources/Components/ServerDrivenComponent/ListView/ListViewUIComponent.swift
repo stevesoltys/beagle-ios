@@ -15,6 +15,7 @@
  */
 
 import UIKit
+import MXParallaxHeader
 
 private struct CellsContextManager {
     
@@ -100,7 +101,17 @@ final class ListViewUIComponent: UIView {
         collection.delegate = self
         collection.showsHorizontalScrollIndicator = model.isScrollIndicatorVisible
         collection.showsVerticalScrollIndicator = model.isScrollIndicatorVisible
-        
+
+        if(model.parallaxHeader != nil) {
+            let headerView = model.parallaxHeader?.toView(renderer: renderer)
+            headerView?.contentMode = .scaleAspectFill
+
+            collection.parallaxHeader.view = headerView
+            collection.parallaxHeader.height = CGFloat(model.parallaxHeader?.widgetProperties.style?.size?.maxHeight?.value ?? 200.0)
+            collection.parallaxHeader.mode = .fill
+            collection.parallaxHeader.minimumHeight = CGFloat(model.parallaxHeader?.widgetProperties.style?.size?.minHeight?.value ?? 0.0)
+        }
+
         let parentController = listController.renderer.controller
         parentController?.addChild(listController)
         addSubview(listController.view)
@@ -235,6 +246,7 @@ extension ListViewUIComponent {
         var onScrollEnd: [Action]?
         var scrollEndThreshold: CGFloat
         var isScrollIndicatorVisible: Bool
+        var parallaxHeader: Image?
     }
 }
 

@@ -27,7 +27,8 @@ extension ListView {
                 iteratorName: iteratorName ?? "item",
                 onScrollEnd: onScrollEnd,
                 scrollEndThreshold: CGFloat(scrollEndThreshold ?? 100),
-                isScrollIndicatorVisible: isScrollIndicatorVisible ?? false
+                isScrollIndicatorVisible: isScrollIndicatorVisible ?? false,
+                parallaxHeader: parallaxHeader
             ),
             renderer: renderer
         )

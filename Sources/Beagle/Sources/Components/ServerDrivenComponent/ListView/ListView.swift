@@ -50,7 +50,10 @@ public struct ListView: Widget, HasContext, InitiableComponent, AutoInitiable {
     
     /// This attribute enables or disables the scroll indicator.
     public let isScrollIndicatorVisible: Bool?
-    
+
+    /// A parallax header image.
+    public let parallaxHeader: Image?
+
     /// Properties that all widgets have in common.
     public var widgetProperties: WidgetProperties
     
@@ -66,6 +69,7 @@ public struct ListView: Widget, HasContext, InitiableComponent, AutoInitiable {
         onScrollEnd: [Action]? = nil,
         scrollEndThreshold: Int? = nil,
         isScrollIndicatorVisible: Bool? = nil,
+        parallaxHeader: Image? = nil,
         widgetProperties: WidgetProperties = WidgetProperties()
     ) {
         self.context = context
@@ -78,6 +82,7 @@ public struct ListView: Widget, HasContext, InitiableComponent, AutoInitiable {
         self.onScrollEnd = onScrollEnd
         self.scrollEndThreshold = scrollEndThreshold
         self.isScrollIndicatorVisible = isScrollIndicatorVisible
+        self.parallaxHeader = parallaxHeader
         self.widgetProperties = widgetProperties
     }
 // sourcery:end
@@ -96,6 +101,7 @@ public struct ListView: Widget, HasContext, InitiableComponent, AutoInitiable {
         onScrollEnd: [Action]? = nil,
         scrollEndThreshold: Int? = nil,
         isScrollIndicatorVisible: Bool? = nil,
+        parallaxHeader: Image? = nil,
         widgetProperties: WidgetProperties = WidgetProperties()
     ) {
         self.init(
@@ -109,6 +115,7 @@ public struct ListView: Widget, HasContext, InitiableComponent, AutoInitiable {
             onScrollEnd: onScrollEnd,
             scrollEndThreshold: scrollEndThreshold,
             isScrollIndicatorVisible: isScrollIndicatorVisible,
+            parallaxHeader: parallaxHeader,
             widgetProperties: widgetProperties
         )
     }
@@ -176,6 +183,7 @@ extension ListView: Decodable {
         case onScrollEnd
         case scrollEndThreshold
         case isScrollIndicatorVisible
+        case parallaxHeader
     }
 
     public init(from decoder: Decoder) throws {
@@ -191,6 +199,7 @@ extension ListView: Decodable {
         onScrollEnd = try container.decodeIfPresent(forKey: .onScrollEnd)
         scrollEndThreshold = try container.decodeIfPresent(Int.self, forKey: .scrollEndThreshold)
         isScrollIndicatorVisible = try container.decodeIfPresent(Bool.self, forKey: .isScrollIndicatorVisible)
+        parallaxHeader = try container.decodeIfPresent(Image.self, forKey: .parallaxHeader)
         widgetProperties = try WidgetProperties(listFrom: decoder)
         
         if let templates: [Template] = try? container.decode([Template].self, forKey: .templates), !templates.isEmpty {
