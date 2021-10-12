@@ -29,5 +29,9 @@ DerivedData/
 *.dSYM
 Pods/
 
+.build/
+.idea/
+Package.resolved
+
 # Sonar Report
 sonar-reports/

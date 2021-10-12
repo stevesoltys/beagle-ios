@@ -23,48 +23,52 @@ public protocol BeagleControllerProtocol: NSObjectProtocol {
     var serverDrivenState: ServerDrivenState { get set }
     var screenType: ScreenType { get }
     var screen: Screen? { get }
-    
+
     func setIdentifier(_ id: String?, in view: UIView)
     func setContext(_ context: Context, in view: UIView)
-    
+
     func addOnInit(_ onInit: [Action], in view: UIView)
     func addBinding<T: Decodable>(expression: ContextExpression, in view: UIView, update: @escaping (T?) -> Void)
-    
+
     func execute(actions: [Action]?, event: String?, origin: UIView)
     func execute(actions: [Action]?, with contextId: String, and contextValue: DynamicObject, origin: UIView)
-    
+
     func setNeedsLayout(component: UIView)
 }
 
 public class BeagleScreenViewController: BeagleController {
-    
+
     private let viewModel: BeagleScreenViewModel
-    
+
     var content: Content? {
-        willSet { content?.remove() }
-        didSet { content?.add(to: self) }
+        willSet {
+            content?.remove()
+        }
+        didSet {
+            content?.add(to: self)
+        }
     }
-    
+
     lazy var layoutManager = LayoutManager(self)
-    
+
     lazy var renderer = dependencies.renderer(self)
-    
+
     let bindings = Bindings()
-    
+
     private var onInit: [(UIView, [Action])] = []
-    
+
     private var navigationControllerId: String?
-    
+
     // TODO: This workaround should be removed in BeagleView future implementation
     var skipNavigationCreation = false
-    
+
     // MARK: - Initialization
-    
+
     @discardableResult
     static func remote(
-        _ remote: ScreenType.Remote,
-        dependencies: BeagleDependenciesProtocol,
-        completion: @escaping (Result<BeagleScreenViewController, Request.Error>) -> Void
+            _ remote: ScreenType.Remote,
+            dependencies: BeagleDependenciesProtocol,
+            completion: @escaping (Result<BeagleScreenViewController, Request.Error>) -> Void
     ) -> RequestToken? {
         return BeagleScreenViewModel.remote(remote, dependencies: dependencies) {
             completion($0.map { viewModel in
@@ -72,29 +76,29 @@ public class BeagleScreenViewController: BeagleController {
             })
         }
     }
-    
+
     @available(*, deprecated, message: "Since version 1.10. Declarative screen construction will be removed in 2.0. Use the init with remote or json parameter instead.")
     public convenience init(_ component: ServerDrivenComponent, controllerId: String? = nil) {
         self.init(.declarative(component.toScreen()), controllerId: controllerId)
         self.navigationControllerId = controllerId
     }
-    
+
     @available(*, deprecated, message: "Since version 1.10. Declarative screen construction will be removed in 2.0. Use the init with remote or json parameter instead.")
     public convenience init(_ screenType: ScreenType, controllerId: String? = nil) {
         self.init(viewModel: .init(screenType: screenType), controllerId: controllerId)
         self.navigationControllerId = controllerId
     }
-    
+
     public convenience init(_ remote: ScreenType.Remote, controllerId: String? = nil) {
         self.init(viewModel: .init(screenType: .remote(remote)), controllerId: controllerId)
         self.navigationControllerId = controllerId
     }
-    
+
     public convenience init(_ json: String, controllerId: String? = nil) {
         self.init(viewModel: .init(screenType: .declarativeText(json)), controllerId: controllerId)
         self.navigationControllerId = controllerId
     }
-    
+
     required init(viewModel: BeagleScreenViewModel, controllerId: String? = nil) {
         self.viewModel = viewModel
         self.navigationControllerId = controllerId
@@ -107,9 +111,9 @@ public class BeagleScreenViewController: BeagleController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - BeagleControllerProtocol
-    
+
     public var dependencies: BeagleDependenciesProtocol {
         return viewModel.dependencies
     }
@@ -120,78 +124,80 @@ public class BeagleScreenViewController: BeagleController {
             loadBeagleViewState(serverDrivenState)
         }
     }
-        
+
     public var screenType: ScreenType {
         return viewModel.screenType
     }
-    
+
     public var screen: Screen? {
         return viewModel.screen
     }
-    
+
     public func addOnInit(_ onInit: [Action], in view: UIView) {
         self.onInit.append((view, onInit))
     }
-    
+
     public func addBinding<T: Decodable>(expression: ContextExpression, in view: UIView, update: @escaping (T?) -> Void) {
         bindings.add(self, expression, view, update)
     }
-    
+
     public func execute(actions: [Action]?, event: String?, origin: UIView) {
         actions?.forEach {
             AnalyticsService.shared?.createRecord(action: .init(action: $0, event: event, origin: origin, controller: self))
             $0.execute(controller: self, origin: origin)
         }
     }
-    
+
     public func execute(actions: [Action]?, with contextId: String, and contextValue: DynamicObject, origin: UIView) {
-        guard let actions = actions else { return }
+        guard let actions = actions else {
+            return
+        }
         let context = Context(id: contextId, value: contextValue)
         origin.setContext(context)
         execute(actions: actions, event: contextId, origin: origin)
     }
-            
+
     // MARK: - Lifecycle
-    
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         initView()
         createContent()
     }
-    
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateNavigationBar(animated: animated)
     }
-    
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if case .view = content {
             viewModel.trackEventOnScreenAppeared()
         }
     }
-    
+
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if case .view = content {
             viewModel.trackEventOnScreenDisappeared()
         }
     }
-    
+
     public override func viewDidLayoutSubviews() {
         executeOnInit()
         bindings.config()
         layoutManager.applyLayout()
         super.viewDidLayoutSubviews()
     }
-    
+
     private func executeOnInit() {
         for (view, actions) in onInit {
             execute(actions: actions, event: "onInit", origin: view)
         }
         onInit.removeAll()
     }
-    
+
     private func createContent() {
         if navigationController == nil && !skipNavigationCreation {
             createNavigationContent()
@@ -200,36 +206,87 @@ public class BeagleScreenViewController: BeagleController {
         viewModel.stateObserver = self
         viewModel.loadScreen()
     }
-    
+
     private func createNavigationContent() {
         let navigation = dependencies.navigation.navigationController(forId: navigationControllerId)
         navigation.viewControllers = [BeagleScreenViewController(viewModel: viewModel)]
         content = .navigation(navigation)
     }
-    
+
     private func updateNavigationBar(animated: Bool) {
-        guard let screen = screen, !skipNavigationCreation else { return }
+        guard let screen = screen, !skipNavigationCreation else {
+            return
+        }
         let screenNavigationBar = screen.navigationBar
         let hideNavBar = screenNavigationBar == nil
-        navigationController?.setNavigationBarHidden(hideNavBar, animated: animated)
-        
+
+        if (hideNavBar) {
+            navigationController?.setNavigationBarHidden(hideNavBar, animated: animated)
+        }
+
         navigationItem.title = screen.navigationBar?.title
         navigationItem.backBarButtonItem = UIBarButtonItem(title: nil, style: .plain, target: nil, action: nil)
         navigationItem.hidesBackButton = !(screen.navigationBar?.showBackButton ?? true)
         ViewConfigurator.applyAccessibility(screenNavigationBar?.backButtonAccessibility, to: navigationItem)
-        
+
         navigationItem.rightBarButtonItems = screenNavigationBar?.navigationBarItems?.reversed().map {
             $0.toBarButtonItem(controller: self)
         }
-        
+
+        let navigationBarStyle = screen.navigationBar?.navigationBarStyle
+
+        if (navigationBarStyle?.titleImage != nil) {
+            let imageView = navigationBarStyle?.titleImage?.toView(renderer: renderer)
+
+            let imageViewWidth = navigationBarStyle?.titleImage?.style?.size?.width?.value
+
+            if (imageViewWidth != nil) {
+                imageView?.widthAnchor.constraint(equalToConstant: CGFloat(imageViewWidth!)).isActive = true
+            }
+
+            let imageViewHeight = navigationBarStyle?.titleImage?.style?.size?.height?.value
+
+            if (imageViewHeight != nil) {
+                imageView?.heightAnchor.constraint(equalToConstant: CGFloat(imageViewHeight!)).isActive = true
+            }
+
+            if (imageView != nil) {
+                navigationItem.titleView = imageView
+            }
+        }
+
+        navigationController?.navigationBar.barTintColor = navigationBarStyle?.backgroundColor.map {
+            UIColor(hex: $0)
+        } ?? navigationController?.navigationBar.barTintColor
+
+        navigationController?.navigationBar.tintColor = navigationBarStyle?.tintColor.map {
+            UIColor(hex: $0)
+        } ?? navigationController?.navigationBar.tintColor
+
+        navigationController?.navigationBar.isTranslucent = navigationBarStyle?.isTransparent
+                ?? (navigationController?.navigationBar.isTranslucent ?? false)
+
+        let shadowEnabled = navigationBarStyle?.isShadowEnabled ?? false
+
+        if (!shadowEnabled) {
+            navigationController?.navigationBar.shadowImage = UIImage()
+            navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        }
+
+        navigationController?.navigationBar.titleTextAttributes = [
+            NSAttributedString.Key.foregroundColor: navigationBarStyle?.textColor.map {
+                UIColor(hex: $0)
+            } ?? UIColor.black
+        ]
+
         if let style = screen.navigationBar?.styleId,
-        let navigationBar = navigationController?.navigationBar {
+           let navigationBar = navigationController?.navigationBar {
             navigationBar.beagle.applyStyle(for: navigationBar as UINavigationBar, styleId: style, with: self)
         }
     }
-    
+
     // MARK: - Update View
-    
+
     fileprivate func updateView(state: ServerDrivenState) {
         switch state {
         case .started:
@@ -246,16 +303,18 @@ public class BeagleScreenViewController: BeagleController {
             serverDrivenState = .finished
         }
     }
-    
+
     private func renderScreenIfNeeded() {
         if content == nil, let screen = screen {
             updateNavigationBar(animated: true)
             content = .view(screen.toView(renderer: renderer))
         }
     }
-    
+
     private func loadBeagleViewState(_ state: ServerDrivenState) {
-        guard let beagleViewState = viewModel.beagleViewStateObserver else { return }
+        guard let beagleViewState = viewModel.beagleViewStateObserver else {
+            return
+        }
         beagleViewState(state)
     }
 
@@ -264,22 +323,22 @@ public class BeagleScreenViewController: BeagleController {
         viewModel.screenType = screenType
         createContent()
     }
-    
+
     public func hasServerDrivenScreen() -> Bool {
         return screen != nil
     }
-    
+
     // MARK: - View Setup
-    
+
     private func initView() {
-         if #available(iOS 13.0, *) {
+        if #available(iOS 13.0, *) {
             view.backgroundColor = UIColor.systemBackground
-         } else {
+        } else {
             view.backgroundColor = .white
-         }
+        }
         updateView(state: viewModel.state)
     }
-    
+
     private func notifyBeagleNavigation(state: ServerDrivenState) {
         (navigationController as? BeagleNavigationController)?.serverDrivenStateDidChange(to: state, at: self)
     }
@@ -289,7 +348,7 @@ extension BeagleControllerProtocol {
     public func setIdentifier(_ id: String?, in view: UIView) {
         dependencies.viewConfigurator(view).setup(id: id)
     }
-    
+
     public func setContext(_ context: Context, in view: UIView) {
         view.setContext(context)
     }
@@ -335,7 +394,7 @@ extension BeagleScreenViewController.Content {
             host.view.superview?.invalidateIntrinsicContentSize()
         }
     }
-    
+
     func remove() {
         switch self {
         case .navigation(let controller):
