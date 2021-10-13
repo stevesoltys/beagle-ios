@@ -65,7 +65,7 @@ public struct NavigationBarItem: Decodable, AccessibilityComponent, Identifiable
     public let id: String?
 
     /// Defines an image for your navigation bar.
-    public let image: StringOrExpression?
+    public let image: Image?
 
     /// Defines the text of the item.
     public let text: String
@@ -78,7 +78,7 @@ public struct NavigationBarItem: Decodable, AccessibilityComponent, Identifiable
 
     public init(
             id: String? = nil,
-            image: String? = nil,
+            image: Image? = nil,
             text: String,
             action: Action,
             accessibility: Accessibility? = nil
@@ -98,10 +98,6 @@ public struct NavigationBarItem: Decodable, AccessibilityComponent, Identifiable
         case accessibility
     }
 
-    enum LocalImageCodingKey: String, CodingKey {
-        case mobileId
-    }
-
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -109,9 +105,7 @@ public struct NavigationBarItem: Decodable, AccessibilityComponent, Identifiable
         text = try container.decode(String.self, forKey: .text)
         action = try container.decode(forKey: .action)
         accessibility = try container.decodeIfPresent(Accessibility.self, forKey: .accessibility)
-
-        let nestedContainer = try? container.nestedContainer(keyedBy: LocalImageCodingKey.self, forKey: .image)
-        image = try nestedContainer?.decodeIfPresent(String.self, forKey: .mobileId)
+        image = try container.decodeIfPresent(Image.self, forKey: .image)
     }
 
 }

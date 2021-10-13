@@ -17,59 +17,59 @@
 import UIKit
 
 extension NavigationBarItem {
-    
+
     func toBarButtonItem(
-        controller: BeagleScreenViewController
+            controller: BeagleScreenViewController
     ) -> UIBarButtonItem {
-        let barButtonItem = NavigationBarButtonItem(barItem: self, controller: controller)
-        return barButtonItem
+        return NavigationBarButtonItem(barItem: self, controller: controller)
     }
-    
+
     final private class NavigationBarButtonItem: UIBarButtonItem {
-        
+
         private let barItem: NavigationBarItem
         private weak var controller: BeagleScreenViewController?
-        
+
         init(
-            barItem: NavigationBarItem,
-            controller: BeagleScreenViewController
+                barItem: NavigationBarItem,
+                controller: BeagleScreenViewController
         ) {
             self.barItem = barItem
             self.controller = controller
             super.init()
-            if let localImage = barItem.image {
-                handleContextOnNavigationBarImage(icon: localImage)
+
+            target = self
+            action = #selector(triggerAction)
+
+            if let barItemImage = barItem.image {
+                handleContextOnNavigationBarImage(barItemImage: barItemImage)
                 accessibilityHint = barItem.text
             } else {
                 title = barItem.text
             }
+
             accessibilityIdentifier = barItem.id
-            target = self
-            action = #selector(triggerAction)
             ViewConfigurator.applyAccessibility(barItem.accessibility, to: self)
         }
-        
-        private func handleContextOnNavigationBarImage(icon: String) {
-            let expression: Expression<String> = "\(icon)"
-            let renderer = controller?.renderer
-            
-            // Since `BeagleScreenViewController` creates a different view hierarchy, to get the correct hierarchy we need to use the `view` from our `controller`.
-            guard case .view(let view) = controller?.content else { return }
-            
-            renderer?.observe(expression, andUpdateManyIn: view) { icon in
-                guard let icon = icon else { return }
-                self.image = UIImage(
-                    named: icon,
-                    in: self.controller?.dependencies.appBundle,
-                    compatibleWith: nil
-                )?.withRenderingMode(.alwaysOriginal)
-            }
+
+        private func handleContextOnNavigationBarImage(barItemImage: Image) {
+            let imageView = barItemImage.toView(renderer: controller!.renderer)
+            imageView.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+
+            let tap: UITapGestureRecognizer = UITapGestureRecognizer(
+                    target: self,
+                    action: action
+            )
+
+            tap.cancelsTouchesInView = false
+            imageView.addGestureRecognizer(tap)
+
+            self.customView = imageView
         }
-        
+
         required init?(coder aDecoder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
-        
+
         @objc private func triggerAction() {
             if case .view(let view) = controller?.content {
                 controller?.execute(actions: [barItem.action], event: nil, origin: view)
