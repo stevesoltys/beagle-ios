@@ -353,6 +353,10 @@
 		E73107BC23A971B000188B3D /* BeaglePrefetchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73107BB23A971B000188B3D /* BeaglePrefetchHelper.swift */; };
 		E7523AF8239E8F2100F93385 /* BeagleDependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7523AF7239E8F2100F93385 /* BeagleDependencies.swift */; };
 		E7716B9D2375E9FF006E26F2 /* BeagleDeepLinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7716B9C2375E9FF006E26F2 /* BeagleDeepLinkHandler.swift */; };
+		F55EF729B2453D56B22A0640 /* Wait+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55EF3060601FD4503BA56AF /* Wait+Extensions.swift */; };
+		F55EF83F1096DED727B71433 /* RemoveChildren+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55EFEE28F3AB349EB16CCE0 /* RemoveChildren+Extensions.swift */; };
+		F55EF8EB5E4F66840B26C2E1 /* Wait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55EF267CCB820A713914D2E /* Wait.swift */; };
+		F55EFDA8202986FDDCC045F1 /* RemoveChildren.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55EFB5D4173A6B24033F2DC /* RemoveChildren.swift */; };
 		FA7AA63C25C3564100385A36 /* BeagleErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7AA63B25C3564100385A36 /* BeagleErrorView.swift */; };
 /* End PBXBuildFile section */
 
@@ -752,6 +756,10 @@
 		E73107BB23A971B000188B3D /* BeaglePrefetchHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaglePrefetchHelper.swift; sourceTree = "<group>"; };
 		E7523AF7239E8F2100F93385 /* BeagleDependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeagleDependencies.swift; sourceTree = "<group>"; };
 		E7716B9C2375E9FF006E26F2 /* BeagleDeepLinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeagleDeepLinkHandler.swift; sourceTree = "<group>"; };
+		F55EF267CCB820A713914D2E /* Wait.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wait.swift; sourceTree = "<group>"; };
+		F55EF3060601FD4503BA56AF /* Wait+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Wait+Extensions.swift"; sourceTree = "<group>"; };
+		F55EFB5D4173A6B24033F2DC /* RemoveChildren.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoveChildren.swift; sourceTree = "<group>"; };
+		F55EFEE28F3AB349EB16CCE0 /* RemoveChildren+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "RemoveChildren+Extensions.swift"; sourceTree = "<group>"; };
 		FA7AA63B25C3564100385A36 /* BeagleErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeagleErrorView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1905,6 +1913,10 @@
 				9337F82C249A466B00B0A260 /* SetContext+Extensions.swift */,
 				9398CA2725531E9B0003A010 /* SubmitForm.swift */,
 				6EB3368B24A52D34000A9D17 /* SubmitForm+Extensions.swift */,
+				F55EF267CCB820A713914D2E /* Wait.swift */,
+				F55EF3060601FD4503BA56AF /* Wait+Extensions.swift */,
+				F55EFB5D4173A6B24033F2DC /* RemoveChildren.swift */,
+				F55EFEE28F3AB349EB16CCE0 /* RemoveChildren+Extensions.swift */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -2367,8 +2379,8 @@
 			);
 			mainGroup = 932925C52327E11000A61F01;
 			packageReferences = (
-				934337202669639400E71837 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
-				93433723266963C600E71837 /* XCRemoteSwiftPackageReference "yoga" */,
+				934337202669639400E71837 /* XCRemoteSwiftPackageReference "swift-snapshot-testing.git" */,
+				93433723266963C600E71837 /* XCRemoteSwiftPackageReference "yoga.git" */,
 			);
 			productRefGroup = 932925D02327E11000A61F01 /* Products */;
 			projectDirPath = "";
@@ -2678,6 +2690,10 @@
 				9398CA7825532E5E0003A010 /* PageView.swift in Sources */,
 				98E49746249D01D60053DB87 /* TextInput+Extensions.swift in Sources */,
 				9398CA93255335430003A010 /* TextInput.swift in Sources */,
+				F55EF8EB5E4F66840B26C2E1 /* Wait.swift in Sources */,
+				F55EF729B2453D56B22A0640 /* Wait+Extensions.swift in Sources */,
+				F55EFDA8202986FDDCC045F1 /* RemoveChildren.swift in Sources */,
+				F55EF83F1096DED727B71433 /* RemoveChildren+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3066,7 +3082,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		934337202669639400E71837 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+		934337202669639400E71837 /* XCRemoteSwiftPackageReference "swift-snapshot-testing.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
 			requirement = {
@@ -3074,7 +3090,7 @@
 				minimumVersion = 1.9.0;
 			};
 		};
-		93433723266963C600E71837 /* XCRemoteSwiftPackageReference "yoga" */ = {
+		93433723266963C600E71837 /* XCRemoteSwiftPackageReference "yoga.git" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ZupIT/yoga.git";
 			requirement = {
@@ -3087,12 +3103,12 @@
 /* Begin XCSwiftPackageProductDependency section */
 		934337212669639400E71837 /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 934337202669639400E71837 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			package = 934337202669639400E71837 /* XCRemoteSwiftPackageReference "swift-snapshot-testing.git" */;
 			productName = SnapshotTesting;
 		};
 		93433724266963C600E71837 /* YogaKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 93433723266963C600E71837 /* XCRemoteSwiftPackageReference "yoga" */;
+			package = 93433723266963C600E71837 /* XCRemoteSwiftPackageReference "yoga.git" */;
 			productName = YogaKit;
 		};
 /* End XCSwiftPackageProductDependency section */

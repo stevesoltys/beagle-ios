@@ -154,6 +154,7 @@ final public class ComponentDecoder: ComponentDecoding {
         registerAction(Navigate.self, key: key(name: "PushStack", namespace: .beagle))
         registerAction(Navigate.self, key: key(name: "PopStack", namespace: .beagle))
         registerAction(Navigate.self, key: key(name: "PushView", namespace: .beagle))
+        registerAction(Navigate.self, key: key(name: "PushViewRoot", namespace: .beagle))
         registerAction(Navigate.self, key: key(name: "PopView", namespace: .beagle))
         registerAction(Navigate.self, key: key(name: "PopToView", namespace: .beagle))
         registerAction(FormValidation.self, key: key(name: "FormValidation", namespace: .beagle))
@@ -166,6 +167,8 @@ final public class ComponentDecoder: ComponentDecoding {
         registerAction(Condition.self, key: key(name: "Condition", namespace: .beagle))
         registerAction(SubmitForm.self, key: key(name: "SubmitForm", namespace: .beagle))
         registerAction(AddChildren.self, key: key(name: "AddChildren", namespace: .beagle))
+        registerAction(RemoveChildren.self, key: key(name: "RemoveChildren", namespace: .beagle))
+        registerAction(Wait.self, key: key(name: "Wait", namespace: .beagle))
     }
     
     private func registerCoreTypes() {

@@ -16,34 +16,28 @@
 
 import UIKit
 
-extension Navigate {
+extension RemoveChildren {
     public func execute(controller: BeagleController, origin: UIView) {
-        controller.dependencies.navigation.navigate(action: self, controller: controller, animated: true, origin: origin)
-    }
-}
+        guard let view = controller.view.getView(by: componentId) else { return }
 
-extension Navigate {
-    var newPath: Route.NewPath? {
-        switch self {
-        case let .resetApplication(route, _, _),
-             let .resetStack(route, _),
-             let .pushStack(route, _, _),
-             let .pushView(route, _),
-             let .pushViewRoot(route, _):
-            return route.path
-        default:
-            return nil
+        view.subviews.indices.forEach { index in
+            if(self.index == index) {
+                view.subviews[index].removeFromSuperview()
+            }
         }
     }
 }
 
-extension Route {
-    var path: NewPath? {
-        switch self {
-        case let .remote(newPath):
-            return newPath
-        case .declarative:
-            return nil
+private extension UIView {
+    func getView(by id: String) -> UIView? {
+        if accessibilityIdentifier == id {
+            return self
         }
+        for view in subviews {
+            if let view = view.getView(by: id) {
+                return view
+            }
+        }
+        return nil
     }
 }

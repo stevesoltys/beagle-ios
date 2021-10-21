@@ -38,7 +38,10 @@ public enum Navigate: AnalyticsAction {
 
     /// Opens a new screen for the given route and stacks that at the top of the hierarchy.
     case pushView(Route, analytics: ActionAnalyticsConfig? = nil)
-    
+
+    /// Opens a new screen for the given route on top of the root view controller.
+    case pushViewRoot(Route, analytics: ActionAnalyticsConfig? = nil)
+
     /// Dismisses the current view.
     case popView(analytics: ActionAnalyticsConfig? = nil)
     
@@ -76,6 +79,7 @@ public enum Navigate: AnalyticsAction {
              .pushStack(_, _, analytics: let analytics),
              .popStack(analytics: let analytics),
              .pushView(_, analytics: let analytics),
+             .pushViewRoot(_, analytics: let analytics),
              .popView(analytics: let analytics),
              .popToView(_, analytics: let analytics):
             return analytics
@@ -197,6 +201,8 @@ extension Navigate: Decodable, CustomReflectable {
             self = .popStack(analytics: analytics)
         case "beagle:pushview":
             self = .pushView(try container.decode(Route.self, forKey: .route), analytics: analytics)
+        case "beagle:pushviewroot":
+            self = .pushViewRoot(try container.decode(Route.self, forKey: .route), analytics: analytics)
         case "beagle:popview":
             self = .popView(analytics: analytics)
         case "beagle:poptoview":
@@ -250,6 +256,12 @@ extension Navigate: Decodable, CustomReflectable {
         case let .pushView(route, analytics: analytics):
             children = [
                 (label: CodingKeys._beagleAction_.stringValue, value: "beagle:pushview"),
+                (label: CodingKeys.analytics.stringValue, value: analytics as Any),
+                (label: CodingKeys.route.stringValue, value: route)
+            ]
+        case let .pushViewRoot(route, analytics: analytics):
+            children = [
+                (label: CodingKeys._beagleAction_.stringValue, value: "beagle:pushviewroot"),
                 (label: CodingKeys.analytics.stringValue, value: analytics as Any),
                 (label: CodingKeys.route.stringValue, value: route)
             ]
