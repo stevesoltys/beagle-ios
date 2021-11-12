@@ -72,6 +72,7 @@ Pod::Spec.new do |spec|
     # We need this because we fixed an issue in the original repository and our PR was not merged yet.
     beagle.frameworks = 'Foundation'
     beagle.dependency 'BeagleYogaKit'
+    beagle.dependency 'FLAnimatedImage'
     beagle.dependency 'MXParallaxHeader', '~> 1.0.0'
   end
 

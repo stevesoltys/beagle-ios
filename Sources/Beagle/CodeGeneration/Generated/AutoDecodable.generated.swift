@@ -65,6 +65,28 @@ extension Button {
     }
 }
 
+// MARK: Switch Decodable
+extension Switch {
+
+    enum CodingKeys: String, CodingKey {
+        case color
+        case styleId
+        case onPress
+        case enabled
+        case clickAnalyticsEvent
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        color = try container.decode(Expression<String>.self, forKey: .color)
+        styleId = try container.decodeIfPresent(String.self, forKey: .styleId)
+        onPress = try container.decodeIfPresent(forKey: .onPress)
+        enabled = try container.decodeIfPresent(Expression<Bool>.self, forKey: .enabled)
+        clickAnalyticsEvent = try container.decodeIfPresent(AnalyticsClick.self, forKey: .clickAnalyticsEvent)
+        widgetProperties = try WidgetProperties(from: decoder)
+    }
+}
+
 // MARK: Condition Decodable
 extension Condition {
 
