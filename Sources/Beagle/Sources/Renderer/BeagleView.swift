@@ -58,6 +58,10 @@ public class BeagleView: UIView {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    public func reloadScreen(with screenType: ScreenType) {
+        beagleController.reloadScreen(with: screenType)
+    }
     
     // MARK: - Lifecycle
     
