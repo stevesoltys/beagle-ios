@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.5
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 /*
@@ -20,22 +20,28 @@
 import PackageDescription
 
 let package = Package(
-  name: "Beagle",
-  platforms: [
-    .iOS(.v10)
-  ],
-  products: [
-    .library(name: "Beagle", targets: ["Beagle"])
-  ],
-  dependencies: [
-    .package(url: "https://github.com/ZupIT/yoga.git", from: "1.19.0")
-  ],
-  targets: [
-    .target(
-      name: "Beagle",
-      dependencies: ["YogaKit"],
-      path: "Sources/Beagle",
-      exclude: ["BeagleTests"]
-    )
-  ]
+        name: "Beagle",
+        platforms: [
+            .iOS(.v12)
+        ],
+        products: [
+            .library(name: "Beagle", targets: ["Beagle"])
+        ],
+        dependencies: [
+            .package(url: "https://github.com/google/GoogleSignIn-iOS.git", from: "6.1.0"),
+            .package(url: "https://github.com/firebase/firebase-ios-sdk.git", from: "8.0.0"),
+            .package(url: "https://github.com/ZupIT/yoga.git", from: "1.19.0"),
+            .package(url: "https://github.com/Flipboard/FLAnimatedImage.git", from: "1.0.15"),
+            .package(url: "https://github.com/maxep/MXParallaxHeader.git", branch: "master")
+        ],
+        targets: [
+            .target(
+                    name: "Beagle",
+                    dependencies: [
+                        .product(name: "YogaKit", package: "yoga")
+                    ],
+                    path: "Sources/Beagle",
+                    exclude: ["BeagleTests"]
+            )
+        ]
 )
