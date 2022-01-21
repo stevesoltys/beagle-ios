@@ -58,6 +58,7 @@ extension FirebaseSignIn: AsyncAction {
     func executeSuccess(controller: BeagleController, origin: UIView, value: DynamicObject) {
         DispatchQueue.main.async {
             controller.execute(actions: onSuccess, with: "onSuccess", and: value, origin: origin)
+            controller.execute(actions: onFinish, event: "onFinish", origin: origin)
         }
     }
 
