@@ -205,6 +205,7 @@ final public class ComponentDecoder: ComponentDecoding {
         registerComponent(WebView.self, key: key(name: "WebView", namespace: .beagle))
         registerComponent(TextInput.self, key: key(name: "TextInput", namespace: .beagle))
         registerComponent(PullToRefresh.self, key: key(name: "PullToRefresh", namespace: .beagle))
+        registerComponent(BottomNavigationBar.self, key: key(name: "BottomNavigationBar", namespace: .beagle))
     }
     
     private func registerComponent<T: Decodable>(_ type: T.Type, key: String) {
