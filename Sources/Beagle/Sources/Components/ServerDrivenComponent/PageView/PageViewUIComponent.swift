@@ -31,8 +31,8 @@ class PageViewUIComponent: UIView {
         var currentPage: Int
 
         init(
-            pages: [UIViewController],
-            currentPage: Int = 0
+                pages: [UIViewController],
+                currentPage: Int = 0
         ) {
             self.pages = pages
             self.currentPage = currentPage
@@ -41,23 +41,33 @@ class PageViewUIComponent: UIView {
 
     private var pendingPage = 0
     private var initialized = false
-    
+
     var onPageChange: ((_ currentPage: Int) -> Void)?
 
     private let indicatorView: PageIndicatorUIView?
+
+    private let animated: Bool?
+
+    private let scrollable: Bool?
+
     weak var pageViewDelegate: PageViewUIComponentDelegate?
 
     // MARK: - Init
 
     init(
-        model: Model,
-        indicatorView: PageIndicatorUIView?,
-        controller: BeagleController?
+            model: Model,
+            indicatorView: PageIndicatorUIView?,
+            controller: BeagleController?,
+            animated: Bool? = nil,
+            scrollable: Bool? = nil
     ) {
         self.model = model
         self.indicatorView = indicatorView
+        self.animated = animated
+        self.scrollable = scrollable
+
         super.init(frame: .zero)
-        
+
         self.indicatorView?.outputReceiver = self
 
         setupLayout(controller: controller)
@@ -72,23 +82,31 @@ class PageViewUIComponent: UIView {
     // MARK: - Subviews
 
     private(set) var pageViewController = UIPageViewController(
-        transitionStyle: .scroll,
-        navigationOrientation: .horizontal
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal
     )
-    
+
     private func setupLayout(controller: BeagleController?) {
         controller?.addChild(pageViewController)
         addSubview(pageViewController.view)
         pageViewController.didMove(toParent: controller)
         pageViewController.view.anchorTo(superview: self)
-        
+
         if let firstPage = model.pages.first {
             pageViewController.setViewControllers(
-                [firstPage], direction: .forward, animated: false
+                    [firstPage], direction: .forward, animated: false
             )
         }
         pageViewController.dataSource = self
         pageViewController.delegate = self
+
+        if(scrollable == false) {
+            for view in pageViewController.view.subviews {
+                if let subView = view as? UIScrollView {
+                    subView.isScrollEnabled = false
+                }
+            }
+        }
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -99,8 +117,8 @@ class PageViewUIComponent: UIView {
 
     private func updateView() {
         indicatorView?.model = .init(
-            numberOfPages: model.pages.count,
-            currentPage: model.currentPage
+                numberOfPages: model.pages.count,
+                currentPage: model.currentPage
         )
     }
 }
@@ -112,9 +130,9 @@ extension PageViewUIComponent: PageIndicatorOutput {
     func swipeToPage(at index: Int) {
         guard let destinationVc = model.pages[safe: index] else { return }
         if index > model.currentPage {
-            pageViewController.setViewControllers([destinationVc], direction: .forward, animated: initialized)
+            pageViewController.setViewControllers([destinationVc], direction: .forward, animated: animated ?? true)
         } else {
-            pageViewController.setViewControllers([destinationVc], direction: .reverse, animated: initialized)
+            pageViewController.setViewControllers([destinationVc], direction: .reverse, animated: animated ?? true)
         }
         model.currentPage = index
         initialized = true
@@ -125,11 +143,11 @@ extension PageViewUIComponent: PageIndicatorOutput {
 
 extension PageViewUIComponent: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
     func pageViewController(
-        _ pageViewController: UIPageViewController,
-        viewControllerBefore viewController: UIViewController
+            _ pageViewController: UIPageViewController,
+            viewControllerBefore viewController: UIViewController
     ) -> UIViewController? {
         guard let i = model.pages.firstIndex(of: viewController) else {
-                return nil
+            return nil
         }
 
         model.currentPage = i
@@ -141,11 +159,11 @@ extension PageViewUIComponent: UIPageViewControllerDataSource, UIPageViewControl
     }
 
     func pageViewController(
-        _ pageViewController: UIPageViewController,
-        viewControllerAfter viewController: UIViewController
+            _ pageViewController: UIPageViewController,
+            viewControllerAfter viewController: UIViewController
     ) -> UIViewController? {
         guard let i = model.pages.firstIndex(of: viewController) else {
-                return nil
+            return nil
         }
 
         model.currentPage = i
@@ -157,22 +175,22 @@ extension PageViewUIComponent: UIPageViewControllerDataSource, UIPageViewControl
     }
 
     func pageViewController(
-        _ pageViewController: UIPageViewController,
-        willTransitionTo pendingViewControllers: [UIViewController]
+            _ pageViewController: UIPageViewController,
+            willTransitionTo pendingViewControllers: [UIViewController]
     ) {
         guard let vc = pendingViewControllers.first,
-            let index = model.pages.firstIndex(of: vc) else {
-                return
+              let index = model.pages.firstIndex(of: vc) else {
+            return
         }
 
         pendingPage = index
     }
 
     func pageViewController(
-        _ pageViewController: UIPageViewController,
-        didFinishAnimating finished: Bool,
-        previousViewControllers: [UIViewController],
-        transitionCompleted completed: Bool
+            _ pageViewController: UIPageViewController,
+            didFinishAnimating finished: Bool,
+            previousViewControllers: [UIViewController],
+            transitionCompleted completed: Bool
     ) {
         guard finished && completed else { return }
         model.currentPage = pendingPage

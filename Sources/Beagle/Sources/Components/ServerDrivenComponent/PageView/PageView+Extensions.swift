@@ -28,7 +28,9 @@ extension PageView {
                 ComponentHostController($0, renderer: renderer)
             }),
             indicatorView: indicatorView,
-            controller: renderer.controller
+            controller: renderer.controller,
+            animated: animated,
+            scrollable: scrollable
         )
         pagesView.onPageChange = { [weak view] page in
             guard let view = view else { return }
