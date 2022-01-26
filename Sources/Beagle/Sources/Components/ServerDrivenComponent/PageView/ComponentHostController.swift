@@ -19,20 +19,24 @@ import UIKit
 class ComponentHostController: BeagleController {
 
     let component: ServerDrivenComponent
-    let renderer: BeagleRenderer
+
+    public let renderer: BeagleRenderer
 
     let bindings = Bindings()
 
     var dependencies: BeagleDependenciesProtocol {
         return renderer.dependencies
     }
+
     var serverDrivenState: ServerDrivenState {
         get { renderer.controller?.serverDrivenState ?? .finished }
         set { renderer.controller?.serverDrivenState = newValue }
     }
+
     var screenType: ScreenType {
         return renderer.controller?.screenType ?? .declarativeText("")
     }
+
     var screen: Screen? {
         return renderer.controller?.screen
     }
@@ -40,15 +44,29 @@ class ComponentHostController: BeagleController {
     func addOnInit(_ onInit: [Action], in view: UIView) {
         renderer.controller?.addOnInit(onInit, in: view)
     }
-    
+
     func execute(actions: [Action]?, event: String?, origin: UIView) {
-        renderer.controller?.execute(actions: actions, event: event, origin: origin)
+        var executeController = self
+
+        while(executeController.renderer.controller is ComponentHostController) {
+            executeController = executeController.renderer.controller! as! ComponentHostController
+        }
+
+        actions?.forEach {
+            AnalyticsService.shared?.createRecord(action: .init(action: $0, event: event, origin: origin, controller: self))
+            $0.execute(controller: executeController, origin: origin)
+        }
     }
 
     func execute(actions: [Action]?, with contextId: String, and contextValue: DynamicObject, origin: UIView) {
-        renderer.controller?.execute(actions: actions, with: contextId, and: contextValue, origin: origin)
+        guard let actions = actions else {
+            return
+        }
+        let context = Context(id: contextId, value: contextValue)
+        origin.setContext(context)
+        execute(actions: actions, event: contextId, origin: origin)
     }
-    
+
     public func addBinding<T: Decodable>(expression: ContextExpression, in view: UIView, update: @escaping (T?) -> Void) {
         bindings.add(self, expression, view, update)
     }
@@ -56,6 +74,7 @@ class ComponentHostController: BeagleController {
     init(_ component: ServerDrivenComponent, renderer: BeagleRenderer) {
         self.component = component
         self.renderer = renderer
+
         super.init(nibName: nil, bundle: nil)
     }
 
