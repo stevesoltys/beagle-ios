@@ -169,8 +169,12 @@ final public class ComponentDecoder: ComponentDecoding {
         registerAction(AddChildren.self, key: key(name: "AddChildren", namespace: .beagle))
         registerAction(RemoveChildren.self, key: key(name: "RemoveChildren", namespace: .beagle))
         registerAction(Wait.self, key: key(name: "Wait", namespace: .beagle))
+        registerAction(While.self, key: key(name: "While", namespace: .beagle))
         registerAction(FirebaseSignIn.self, key: key(name: "FirebaseSignIn", namespace: .beagle))
         registerAction(FirebaseSignOut.self, key: key(name: "FirebaseSignOut", namespace: .beagle))
+        registerAction(FirebaseSignUp.self, key: key(name: "FirebaseSignUp", namespace: .beagle))
+        registerAction(FirebaseSendVerificationEmail.self, key: key(name: "FirebaseSendVerificationEmail", namespace: .beagle))
+        registerAction(FirebaseFetchUserDetails.self, key: key(name: "FirebaseFetchUserDetails", namespace: .beagle))
     }
     
     private func registerCoreTypes() {
