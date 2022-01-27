@@ -77,3 +77,34 @@ extension NavigationBarItem {
         }
     }
 }
+
+public class NavigationBarSearchUpdater: NSObject, UISearchResultsUpdating {
+    
+    private let controller: BeagleController
+
+    private let onQueryUpdated: [Action]?
+    
+    private var lastQuery: String? = nil
+    
+    init(controller: BeagleController, onQueryUpdated: [Action]?) {
+        self.controller = controller
+        self.onQueryUpdated = onQueryUpdated
+    }
+    
+    public func updateSearchResults(for searchController: UISearchController) {
+        if let onQueryUpdated = onQueryUpdated {
+            let query = searchController.searchBar.text ?? ""
+            
+            if(lastQuery != query) {
+                let value: DynamicObject = [
+                    "query": "\(query)"
+                ]
+                
+                controller.execute(actions: onQueryUpdated, with: "onQueryUpdated",
+                                   and: value, origin: searchController.searchBar)
+                
+                lastQuery = query
+            }
+        }
+    }
+}

@@ -52,6 +52,10 @@ public class BeagleScreenViewController: BeagleController {
     lazy var layoutManager = LayoutManager(self)
 
     lazy var renderer = dependencies.renderer(self)
+    
+    lazy var searchController = UISearchController(searchResultsController: nil)
+    
+    var navigationBarSearchUpdater: NavigationBarSearchUpdater? = nil
 
     let bindings = Bindings()
 
@@ -253,6 +257,26 @@ public class BeagleScreenViewController: BeagleController {
             if (imageView != nil) {
                 navigationItem.titleView = imageView
             }
+        }
+
+        if let searchBar = screenNavigationBar?.searchBar {
+            searchController.searchBar.placeholder = searchBar.placeholder ?? ""
+            
+            navigationBarSearchUpdater = NavigationBarSearchUpdater(controller: self, onQueryUpdated: searchBar.onQueryUpdated)
+            searchController.searchResultsUpdater = navigationBarSearchUpdater
+            
+            searchController.hidesNavigationBarDuringPresentation = false
+            searchController.obscuresBackgroundDuringPresentation = false
+            searchController.searchBar.searchBarStyle = .default
+            
+            if #available(iOS 11.0, *) {
+                navigationItem.searchController = searchController
+                navigationItem.hidesSearchBarWhenScrolling = searchBar.hideWhenScrolling ?? false
+            } else {
+                navigationItem.titleView = searchController.searchBar
+            }
+            
+            self.definesPresentationContext = true
         }
 
         navigationController?.navigationBar.barTintColor = navigationBarStyle?.backgroundColor.map {

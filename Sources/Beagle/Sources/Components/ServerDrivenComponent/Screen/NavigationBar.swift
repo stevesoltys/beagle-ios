@@ -21,7 +21,7 @@ import UIKit
 public struct NavigationBar: Decodable, AutoInitiable {
 
     /// Defines the title on the navigation bar.
-    public let title: String
+    public let title: String?
 
     /// Could define a custom layout for your action bar/navigation bar.
     public let styleId: String?
@@ -38,14 +38,18 @@ public struct NavigationBar: Decodable, AutoInitiable {
     /// Defines a List of navigation bar items.
     public let navigationBarItems: [NavigationBarItem]?
 
+    /// Defines a search bar.
+    public let searchBar: SearchBar?
+
 // sourcery:inline:auto:NavigationBar.Init
     public init(
-            title: String,
+            title: String?,
             styleId: String? = nil,
             navigationBarStyle: NavigationBarStyle? = nil,
             showBackButton: Bool? = nil,
             backButtonAccessibility: Accessibility? = nil,
-            navigationBarItems: [NavigationBarItem]? = nil
+            navigationBarItems: [NavigationBarItem]? = nil,
+            searchBar: SearchBar? = nil
     ) {
         self.title = title
         self.styleId = styleId
@@ -53,10 +57,46 @@ public struct NavigationBar: Decodable, AutoInitiable {
         self.showBackButton = showBackButton
         self.backButtonAccessibility = backButtonAccessibility
         self.navigationBarItems = navigationBarItems
+        self.searchBar = searchBar
     }
 
 // sourcery:end
 }
+
+/// Defines a search bar in the navigation bar.
+public struct SearchBar: Decodable {
+
+    public let placeholder: String?
+
+    public let hideWhenScrolling: Bool?
+
+    public let onQueryUpdated: [Action]?
+
+    public init(
+            placeholder: String? = nil,
+            hideWhenScrolling: Bool? = nil,
+            onQueryUpdated: [Action]? = nil
+    ) {
+        self.placeholder = placeholder
+        self.hideWhenScrolling = hideWhenScrolling
+        self.onQueryUpdated = onQueryUpdated
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case placeholder
+        case hideWhenScrolling
+        case onQueryUpdated
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        placeholder = try container.decodeIfPresent(String.self, forKey: .placeholder)
+        hideWhenScrolling = try container.decodeIfPresent(Bool.self, forKey: .hideWhenScrolling)
+        onQueryUpdated = try container.decodeIfPresent(forKey: .onQueryUpdated)
+    }
+}
+
 
 /// Defines a item that could be showed in navigation bar.
 public struct NavigationBarItem: Decodable, AccessibilityComponent, IdentifiableComponent {
