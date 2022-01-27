@@ -23,26 +23,33 @@ extension LazyComponent {
         lazyLoad(initialState: view, renderer: renderer)
         return view
     }
-    
+
     private func lazyLoad(initialState view: UIView, renderer: BeagleRenderer) {
-        renderer.dependencies.repository.fetchComponent(url: path, additionalData: nil, useCache: false) {
-            [weak view] result in
-            guard let view = view else { return }
-            switch result {
-            case .success(let component):
-                view.update(lazyLoaded: component, renderer: renderer)
-            case .failure(let error):
-                renderer.controller?.serverDrivenState = .error(
-                    .lazyLoad(error),
-                    self.retryClosure(initialState: view, renderer: renderer)
-                )
+        if let evaluatedPath = path.evaluate(with: view) {
+
+            renderer.dependencies.repository.fetchComponent(url: evaluatedPath, additionalData: nil, useCache: false) {
+                [weak view] result in
+                guard let view = view else {
+                    return
+                }
+                switch result {
+                case .success(let component):
+                    view.update(lazyLoaded: component, renderer: renderer)
+                case .failure(let error):
+                    renderer.controller?.serverDrivenState = .error(
+                            .lazyLoad(error),
+                            self.retryClosure(initialState: view, renderer: renderer)
+                    )
+                }
             }
         }
     }
-    
+
     private func retryClosure(initialState view: UIView, renderer: BeagleRenderer) -> BeagleRetry {
         return { [weak view] in
-            guard let view = view else { return }
+            guard let view = view else {
+                return
+            }
             self.lazyLoad(initialState: view, renderer: renderer)
         }
     }
@@ -50,11 +57,11 @@ extension LazyComponent {
 
 extension UIView {
     fileprivate func update(
-        lazyLoaded: ServerDrivenComponent,
-        renderer: BeagleRenderer
+            lazyLoaded: ServerDrivenComponent,
+            renderer: BeagleRenderer
     ) {
         if let updatable = self as? OnStateUpdatable,
-            updatable.onUpdateState(component: lazyLoaded) {
+           updatable.onUpdateState(component: lazyLoaded) {
             renderer.controller?.setNeedsLayout(component: self)
         } else {
             DispatchQueue.main.async {
@@ -62,18 +69,20 @@ extension UIView {
             }
         }
     }
-    
+
     private func replace(
-        with component: ServerDrivenComponent,
-        renderer: BeagleRenderer
+            with component: ServerDrivenComponent,
+            renderer: BeagleRenderer
     ) {
-        guard let superview = superview else { return }
-        
+        guard let superview = superview else {
+            return
+        }
+
         let newView = renderer.render(component)
         newView.frame = frame
         superview.insertSubview(newView, belowSubview: self)
         removeFromSuperview()
-        
+
         if renderer.dependencies.style(self).isFlexEnabled {
             renderer.dependencies.style(newView).isFlexEnabled = true
         }

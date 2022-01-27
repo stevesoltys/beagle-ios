@@ -19,14 +19,14 @@
  public struct LazyComponent: ServerDrivenComponent, AutoInitiableAndDecodable {
     
     /// The URL to make the request.
-    public let path: String
+    public let path: Expression<String>
     
     /// Defines a ServerDrivenComponent that is set to be on view while the asynchronous request made is being fulfilled.
     public let initialState: ServerDrivenComponent
 
 // sourcery:inline:auto:LazyComponent.Init
     public init(
-        path: String,
+        path: Expression<String>,
         initialState: ServerDrivenComponent
     ) {
         self.path = path
