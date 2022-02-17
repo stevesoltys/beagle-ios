@@ -174,6 +174,7 @@ final public class ComponentDecoder: ComponentDecoding {
         registerAction(FirebaseSignOut.self, key: key(name: "FirebaseSignOut", namespace: .beagle))
         registerAction(FirebaseSignUp.self, key: key(name: "FirebaseSignUp", namespace: .beagle))
         registerAction(FirebaseSendVerificationEmail.self, key: key(name: "FirebaseSendVerificationEmail", namespace: .beagle))
+        registerAction(FirebaseForgotPassword.self, key: key(name: "FirebaseForgotPassword", namespace: .beagle))
         registerAction(FirebaseFetchUserDetails.self, key: key(name: "FirebaseFetchUserDetails", namespace: .beagle))
     }
     
