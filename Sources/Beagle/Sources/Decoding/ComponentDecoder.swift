@@ -176,6 +176,8 @@ final public class ComponentDecoder: ComponentDecoding {
         registerAction(FirebaseSendVerificationEmail.self, key: key(name: "FirebaseSendVerificationEmail", namespace: .beagle))
         registerAction(FirebaseForgotPassword.self, key: key(name: "FirebaseForgotPassword", namespace: .beagle))
         registerAction(FirebaseFetchUserDetails.self, key: key(name: "FirebaseFetchUserDetails", namespace: .beagle))
+        registerAction(SetSettingsValue.self, key: key(name: "SetSettingsValue", namespace: .beagle))
+        registerAction(GetSettingsValue.self, key: key(name: "GetSettingsValue", namespace: .beagle))
     }
     
     private func registerCoreTypes() {

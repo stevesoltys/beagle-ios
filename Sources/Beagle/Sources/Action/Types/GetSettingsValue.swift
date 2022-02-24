@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-public struct FirebaseSignUp: Action, Decodable, AnalyticsAction {
+public struct GetSettingsValue: Action, Decodable, AnalyticsAction {
 
-    /// The email expression.
-    public let email: Expression<String>?
-
-    /// The password expression.
-    public let password: Expression<String>?
+    /// The key expression.
+    public let key: Expression<String>?
 
     /// Actions to be executed in success case.
     public let onSuccess: [Action]?
@@ -35,15 +32,13 @@ public struct FirebaseSignUp: Action, Decodable, AnalyticsAction {
     public let analytics: ActionAnalyticsConfig?
 
     public init(
-            email: Expression<String>? = nil,
-            password: Expression<String>? = nil,
+            key: Expression<String>? = nil,
             onSuccess: [Action]? = nil,
             onError: [Action]? = nil,
             onFinish: [Action]? = nil,
             analytics: ActionAnalyticsConfig? = nil
     ) {
-        self.email = email
-        self.password = password
+        self.key = key
         self.onSuccess = onSuccess
         self.onError = onError
         self.onFinish = onFinish
@@ -51,8 +46,7 @@ public struct FirebaseSignUp: Action, Decodable, AnalyticsAction {
     }
 
     enum CodingKeys: String, CodingKey {
-        case email
-        case password
+        case key
         case onSuccess
         case onError
         case onFinish
@@ -62,8 +56,7 @@ public struct FirebaseSignUp: Action, Decodable, AnalyticsAction {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        email = try container.decodeIfPresent(Expression<String>.self, forKey: .email)
-        password = try container.decodeIfPresent(Expression<String>.self, forKey: .password)
+        key = try container.decodeIfPresent(Expression<String>.self, forKey: .key)
         onSuccess = try container.decodeIfPresent(forKey: .onSuccess)
         onError = try container.decodeIfPresent(forKey: .onError)
         onFinish = try container.decodeIfPresent(forKey: .onFinish)
