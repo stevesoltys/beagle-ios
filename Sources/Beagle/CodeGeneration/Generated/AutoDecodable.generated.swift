@@ -43,7 +43,9 @@ extension Button {
 
     enum CodingKeys: String, CodingKey {
         case text
+        case highlightedBackgroundColor
         case textColor
+        case highlightedTextColor
         case textSize
         case styleId
         case onPress
@@ -55,7 +57,9 @@ extension Button {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         text = try container.decode(Expression<String>.self, forKey: .text)
-        textColor = try container.decode(Expression<String>.self, forKey: .textColor)
+        highlightedBackgroundColor = try container.decodeIfPresent(Expression<String>.self, forKey: .highlightedBackgroundColor)
+        textColor = try container.decodeIfPresent(Expression<String>.self, forKey: .textColor)
+        highlightedTextColor = try container.decodeIfPresent(Expression<String>.self, forKey: .highlightedTextColor)
         textSize = try container.decode(Expression<Int>.self, forKey: .textSize)
         styleId = try container.decodeIfPresent(String.self, forKey: .styleId)
         onPress = try container.decodeIfPresent(forKey: .onPress)

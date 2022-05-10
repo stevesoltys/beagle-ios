@@ -20,6 +20,7 @@ extension Button {
     
     public func toView(renderer: BeagleRenderer) -> UIView {
         let button = BeagleUIButton(
+            style: style,
             onPress: onPress,
             clickAnalyticsEvent: clickAnalyticsEvent,
             controller: renderer.controller
@@ -32,10 +33,17 @@ extension Button {
         renderer.observe(enabled, andUpdateManyIn: button) {
             if let enabled = $0 {
                 button.isEnabled = enabled
-                button.setTitleColor(enabled ? .systemBlue : .systemGray, for: .normal)
             }
         }
-
+        
+        renderer.observe(highlightedBackgroundColor, andUpdateManyIn: button) {
+            button.highlightedBackgroundColor = $0.flatMap { UIColor(hex: $0) }
+        }
+        
+        renderer.observe(highlightedTextColor, andUpdateManyIn: button) {
+            button.setTitleColor($0.flatMap { UIColor(hex: $0) }, for: .highlighted)
+        }
+        
         renderer.observe(textColor, andUpdateManyIn: button) {
             button.setTitleColor($0.flatMap { UIColor(hex: $0) }, for: .normal)
         }
@@ -62,16 +70,24 @@ extension Button {
             didSet { applyStyle() }
         }
         
+        var beagleStyle: Style?
+    
+        var highlightedTextColor: UIColor?
+        
+        var highlightedBackgroundColor: UIColor?
+        
         private var onPress: [Action]?
         private var clickAnalyticsEvent: AnalyticsClick?
         private weak var controller: BeagleController?
         
         required init(
+            style: Style?,
             onPress: [Action]?,
             clickAnalyticsEvent: AnalyticsClick? = nil,
             controller: BeagleController?
         ) {
             super.init(frame: .zero)
+            self.beagleStyle = style
             self.onPress = onPress
             self.clickAnalyticsEvent = clickAnalyticsEvent
             self.controller = controller
@@ -87,6 +103,17 @@ extension Button {
         override func layoutSubviews() {
             super.layoutSubviews()
             applyStyle()
+        }
+        
+        override var isHighlighted: Bool {
+            didSet {
+                if(!isHighlighted) {
+                    backgroundColor = beagleStyle?.backgroundColor.flatMap { UIColor(hex: $0) }
+                } else {
+                    backgroundColor = highlightedBackgroundColor
+                }
+                
+            }
         }
         
         @objc func triggerTouchUpInsideActions() {
